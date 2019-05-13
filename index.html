@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Human Rights Defenders</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+<body>
+    
+    
+
+    <div id="map"></div>
+
+
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800');
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            font-weight: 600;
+        }
+
+        #map {
+            height: 95vh;
+            margin: 40px;
+        }
+    </style>
+
+    <script>
+    
+        Plotly.d3.csv('./data.csv', function(err, rows){
+            function unpack(rows, key) {
+                return rows.map(function(row) { return row[key]; });
+            }
+            
+            var data = [{
+                type: 'choropleth',
+                showscale: false,
+                locationmode: 'country names',
+                locations: unpack(rows, 'location'),
+                z: unpack(rows, 'alcohol'),
+                text: unpack(rows, 'location'),
+                autocolorscale: true,
+                marker: {
+                    line:{
+                        // color: 'rgb(255,255,255)',
+                        width: 1
+                    }
+                },
+                colorbar: {
+                    title: 'Grade',
+                    thickness: 10
+                },
+            }];
+
+            var layout = {
+                dragmode: false,
+                font: {
+                    size: 25,
+                    family: 'Open Sans'
+                },
+                paper_bgcolor: 'rgba(0,0,0,0)',
+                plot_bgcolor: 'rgba(0,0,0,0)',
+                geo: {
+                    showframe: false,
+                    showcoastlines: false,
+                    projection: {
+                        type: 'robinson'
+                        // type: 'orthographic'
+                    }
+                },
+                margin: {
+                    l: 0,
+                    r: 0,
+                    b: 0,
+                    t: 0,
+                    pad: 1
+                },
+            };
+
+        Plotly.plot(map, data, layout, {responsive: true, displaylogo: false, displayModeBar: false, }).then(gd => {
+            gd.on('plotly_click', d => {
+                var pt = (d.points || [])[0]
+                
+                window.open("https://www.google.com?q=" + pt.location)
+            })
+        });
+        })
+    </script>
+    
+</body>
+</html>
